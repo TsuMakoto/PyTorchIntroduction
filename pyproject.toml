@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "torch1_1"
+name = "app"
 version = "0.1.0"
 description = ""
 authors = ["TsuMakoto <tsukamoto@fusic.co.jp>"]
