@@ -1,33 +1,19 @@
-FROM python:3.8.0-alpine
-
-RUN apk update && apk --update add gcc \
-                                   g++ \
-                                   musl-dev \
-                                   python3-dev \
-                                   libffi-dev \
-                                   openssl-dev \
-                                   bash \
-                                   curl \
-                                   zlib-dev \
-                                   freetype-dev \
-                                   lcms2-dev \
-                                   openjpeg-dev \
-                                   tiff-dev \
-                                   tk-dev \
-                                   tcl-dev \
-                                   harfbuzz-dev \
-                                   fribidi-dev
+FROM petronetto/pytorch-alpine
 
 RUN pip install --upgrade pip
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+RUN pip install --upgrade cython
+RUN pip install numpy \
+                Image \
+                matplotlib \
+                lab \
+                jupyterlab \
+                pytest
+
+WORKDIR /app/app/config
+COPY ./app/config/setup.py ./
+RUN python setup.py
+ADD https://cdn.pixabay.com/photo/2018/10/05/02/26/goldenretriever-3724972_960_720.jpg ./app/data/goldenretriever.jpg
 
 WORKDIR /app
-# COPY poetry.lock ./
-COPY pyproject.toml ./
-RUN $HOME/.poetry/bin/poetry install
-# torch
-RUN pip install torch==1.4.0+cpu torchvision==0.5.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
 
-COPY ./ ./
-
-CMD ["/root/.poetry/bin/poetry", "run", "jupyter", "lab", "--ip=0.0.0.0", "--no-browser", "--allow-root", "--NotebookApp.token=''", "--port=3100"]
+CMD ["jupyter", "lab", "--ip=0.0.0.0", "--no-browser", "--allow-root", "--NotebookApp.token=''", "--port=3100"]
